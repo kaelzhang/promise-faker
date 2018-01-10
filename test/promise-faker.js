@@ -408,9 +408,14 @@ CASES.forEach(c => {
 })
 
 test('resolver error', async t => {
-  t.throws(() => {
+  try {
     new FakePromise
-  }, TypeError)
+  } catch (e) {
+    t.is(e instanceof TypeError, true)
+    return
+  }
+
+  t.fail('should throw')
 })
 
 test('pending', async t => {
