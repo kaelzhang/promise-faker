@@ -1,6 +1,6 @@
 {
   "name": "promise-faker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Provides promise-like APIs but does the synchronous things. This module is useful for controlling flows.",
   "main": "lib/index.js",
   "module": "src/index.js",

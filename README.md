@@ -55,6 +55,9 @@ Returns a fake promise
 - **end** `?boolean=false` The additional parameter only for `FakePromise`, and if this parameter is `true`, it will try to get the final value or throw an error if there is a rejection.
 
 ```js
+FakePromise.resolve(FakePromise.resolve(1), true)
+// 1
+
 FakePromise.resolve(FakePromise.reject('2'), true)
 // -> throw '2'
 ```
@@ -75,7 +78,11 @@ try {
 
 ### FakePromise.reject(subject)
 
-Similar as `Promise.reject`
+Similar as `Promise.reject`, but returns a fake promise
+
+### promise.then(onResolve [, onReject])
+
+### promise.catch(onReject)
 
 ## License
 
