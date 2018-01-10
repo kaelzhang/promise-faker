@@ -60,6 +60,7 @@
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "dependencies": {
-    "babel-runtime": "^6.23.0"
+    "graceful-instanceof": "^1.0.0",
+    "symbol-for": "^1.0.0"
   }
 }

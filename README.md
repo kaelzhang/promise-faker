@@ -15,7 +15,7 @@
 
 # promise-faker
 
-<!-- description -->
+Provides promise-like APIs but does the synchronous things. This module is useful for controlling flows.
 
 ## Install
 
@@ -26,8 +26,56 @@ $ npm install promise-faker
 ## Usage
 
 ```js
-import promise_faker from 'promise-faker'
+import FakePromise from 'promise-faker'
+
+// Write flows as normal Promise does
+function factory (p) {
+  const result = p.resolve(1)
+  .then(() => {
+    return 2
+  })
+
+  // Not to make the following chain.
+  return p.resolve(result, true)
+}
+
+// Then, run them as synchronous flows
+factory(FakePromise)  // 2
+factory(Promise)      // Promise {2}
 ```
+
+## new FakePromise(executor)
+
+- **executor** `Function(resolve, reject)`
+
+Returns a fake promise
+
+### FakePromise.resolve(subject [, end])
+
+- **end** `?boolean=false` The additional parameter only for `FakePromise`, and if this parameter is `true`, it will try to get the final value or throw an error if there is a rejection.
+
+```js
+FakePromise.resolve(FakePromise.reject('2'), true)
+// -> throw '2'
+```
+
+And if the fake promise is still pending, an `Error('pending unexpectedly')` error will thrown.
+
+```js
+const p = new FakePromise((resolve, reject) => {
+  return 1
+})
+
+try {
+  FakePromise.resolve(p, true)
+} catch (e) {
+  console.log(e.message)  // 'pending unexpectedly'
+}
+```
+
+### FakePromise.reject(subject)
+
+Similar as `Promise.reject`
 
 ## License
 
