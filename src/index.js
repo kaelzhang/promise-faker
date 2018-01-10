@@ -2,13 +2,18 @@ const {
   FakePromise,
   RESOLVE,
   REJECT,
+  REJECTED,
   PENDING,
-  VALUE,
   tryCatch
 } = require('./fake-promise')
 
+const assert = require('assert')
+
 class _Promise {
   constructor (callback) {
+    assert(typeof callback === 'function',
+      new TypeError(`Promise resolver ${callback} is not a function`))
+
     const p = new FakePromise()
     const result = tryCatch(
       callback,
@@ -16,29 +21,22 @@ class _Promise {
       error => p[REJECT](error)
     )
 
-    if (p[PENDING]) {
-      // resolve or reject never called
+    // resolve or reject already called
+    if (!p[PENDING]) {
+      return p
+    }
+
+    // not called, but there is an error
+    if (result[REJECTED]) {
       return result
     }
 
+    // Promise<pending>
     return p
   }
 }
 
+_Promise.resolve = FakePromise.resolve
 _Promise.reject = FakePromise.reject
-
-_Promise.resolve = (subject, end) => {
-  const p = FakePromise.resolve(subject)
-
-  if (!end) {
-    return p
-  }
-
-  if (p[PENDING]) {
-    throw new Error('pending unexpectedly')
-  }
-
-  return p[VALUE]()
-}
 
 module.exports = _Promise

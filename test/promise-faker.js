@@ -141,7 +141,164 @@ const CASES = [
 
 // Flow
 //////////////////////////////////////////////////////////////
-
+{
+  d: 'resolve then return',
+  factory (P, a, b) {
+    return P.resolve(a)
+    .then(() => {
+      return b
+    })
+  },
+  resolve: 1
+},
+{
+  d: 'resolve then return with catch',
+  factory (P, a, b, c) {
+    return P.resolve(a)
+    .then(() => {
+      return b
+    })
+    .catch(() => {
+      return c
+    })
+  },
+  resolve: 1
+},
+{
+  d: 'resolve then return resolve',
+  factory (P, a, b) {
+    return P.resolve(a)
+    .then(() => {
+      return P.resolve(b)
+    })
+  },
+  resolve: 1
+},
+{
+  d: 'resolve then return resolve with catch',
+  factory (P, a, b, c) {
+    return P.resolve(a)
+    .then(() => {
+      return P.resolve(b)
+    })
+    .catch(() => {
+      return c
+    })
+  },
+  resolve: 1
+},
+{
+  d: 'resolve then return reject',
+  factory (P, a, b) {
+    return P.resolve(a)
+    .then(() => {
+      return P.reject(b)
+    })
+  },
+  reject: 1
+},
+{
+  d: 'resolve then return reject with catch',
+  factory (P, a, b, c) {
+    return P.resolve(a)
+    .then(() => {
+      return P.reject(b)
+    })
+    .catch(() => {
+      return c
+    })
+  },
+  resolve: 2
+},
+{
+  d: 'resolve then throw',
+  factory (P, a, b) {
+    return P.resolve(a)
+    .then(() => {
+      throw b
+    })
+  },
+  reject: 1
+},
+{
+  d: 'resolve then throw with catch',
+  factory (P, a, b, c) {
+    return P.resolve(a)
+    .then(() => {
+      throw b
+    })
+    .catch(() => {
+      return c
+    })
+  },
+  resolve: 2
+},
+{
+  d: 'reject catch return',
+  factory (P, a, b) {
+    return P.reject(a)
+    .catch(() => {
+      return b
+    })
+  },
+  resolve: 1
+},
+{
+  d: 'reject catch return resolve',
+  factory (P, a, b) {
+    return P.reject(a)
+    .catch(() => {
+      return P.resolve(b)
+    })
+  },
+  resolve: 1
+},
+{
+  d: 'reject catch return reject',
+  factory (P, a, b) {
+    return P.reject(a)
+    .catch(() => {
+      return P.reject(b)
+    })
+  },
+  reject: 1
+},
+{
+  d: 'reject catch return reject resolve',
+  factory (P, a, b) {
+    return P.reject(a)
+    .catch(() => {
+      return P.reject(P.resolve(b))
+    })
+  },
+  reject: 1,
+  pResolve: true
+},
+{
+  d: 'reject then catch',
+  factory (P, a, b, c) {
+    return P.reject(a)
+    .then(() => {
+      return b
+    })
+    .catch(() => {
+      return c
+    })
+  },
+  resolve: 2
+},
+{
+  d: 'reject then onReject',
+  factory (P, a, b, c) {
+    return P.reject(a)
+    .then(() => {
+      return b
+    }, () => {
+      return c
+    })
+  },
+  resolve: 2
+}
 ]
 
 const VALUES = [
@@ -228,7 +385,7 @@ function run(c, P, get) {
           return
         }
 
-        console.log('unexpected error', e.stack)
+        console.log('unexpected error', e && e.stack)
         t.fail('should not reject')
         return
       }
@@ -248,4 +405,21 @@ function run(c, P, get) {
 CASES.forEach(c => {
   run(c, Promise, promiseGet)
   run(c, FakePromise, fakePromiseGet)
+})
+
+test('resolver error', async t => {
+  t.throws(() => {
+    new FakePromise
+  }, TypeError)
+})
+
+test('pending', async t => {
+  const p = new FakePromise(() => {
+  })
+
+  const error = await t.throws(() => {
+    FakePromise.resolve(p, true)
+  })
+
+  t.is(error.message, 'pending unexpectedly')
 })

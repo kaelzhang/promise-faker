@@ -5,11 +5,12 @@ const type = instanceOf('promise-faker')
 const RESOLVE = symbol.for('promise-faker:resolve')
 const REJECT = symbol.for('promise-faker:reject')
 const REJECTED = symbol.for('promise-faker:rejected')
-const PENDING = symbol.for('promise-faker:PENDING')
+const PENDING = symbol.for('promise-faker:pending')
 const VALUE = symbol.for('promise-faker:value')
 
 class FakePromise {
   constructor () {
+    type.attach(this)
     this._resolved = undefined
     this._rejected = undefined
     this[REJECTED] = false
@@ -61,17 +62,25 @@ class FakePromise {
       return this
     }
 
-    return tryCatch()
+    return tryCatch(onReject, this._rejected)
   }
 
-  static resolve (subject) {
-    if (type.is(subject)) {
+  static resolve (subject, end) {
+    if (!type.is(subject)) {
+      const p = new FakePromise()
+      p[RESOLVE](subject)
+      return p
+    }
+
+    if (!end) {
       return subject
     }
 
-    const p = new FakePromise()
-    p[RESOLVE](subject)
-    return p
+    if (subject[PENDING]) {
+      throw new Error('pending unexpectedly')
+    }
+
+    return subject[VALUE]()
   }
 
   static reject (error) {
@@ -87,16 +96,14 @@ function tryCatch (func, ...args) {
   } catch (error) {
     return FakePromise.reject(error)
   }
-
-  return FakePromise.resolve(ret)
 }
 
 module.exports = {
   FakePromise,
   RESOLVE,
   REJECT,
+  REJECTED,
   PENDING,
-  VALUE,
   tryCatch,
   type
 }
