@@ -7,12 +7,11 @@ const {
   tryCatch
 } = require('./fake-promise')
 
-const assert = require('assert')
-
 class _Promise {
   constructor (callback) {
-    assert(typeof callback === 'function',
-      new TypeError(`Promise resolver ${callback} is not a function`))
+    if (typeof callback !== 'function') {
+      throw new TypeError(`Promise resolver ${callback} is not a function`)
+    }
 
     const p = new FakePromise()
     const result = tryCatch(
