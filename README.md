@@ -86,7 +86,21 @@ Similar as `Promise.all`, but returns a fake promise
 
 ### promise.then(onResolve [, onReject])
 
+Similar as `promise.then`, but returns a fake promise
+
 ### promise.catch(onReject)
+
+Similar as `promise.catch`, but returns a fake promise
+
+## await
+
+The `FakePromise` instance could even be `await`ed
+
+```js
+console.log(await FakePromise.resolve(1))  // 1
+
+await FakePromise.reject('error') // throw 'error'
+```
 
 ## License
 

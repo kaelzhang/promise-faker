@@ -479,3 +479,15 @@ test('pending', async t => {
 test('Promise.resolve(nonPromise, true)', async t => {
   t.is(FakePromise.resolve(1, true), 1)
 })
+
+test('await', async t => {
+  t.is(await FakePromise.resolve(1), 1)
+})
+
+test('await throw', async t => {
+  try {
+    await FakePromise.reject('a')
+  } catch (e) {
+    t.is(e, 'a')
+  }
+})
