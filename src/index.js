@@ -7,7 +7,7 @@ const {
   tryCatch
 } = require('./fake-promise')
 
-class _Promise {
+class Promise {
   constructor (callback) {
     if (typeof callback !== 'function') {
       throw new TypeError(`Promise resolver ${callback} is not a function`)
@@ -36,14 +36,17 @@ class _Promise {
 }
 
 const {
-  resolve
+  resolve,
 } = FakePromise
-
-_Promise.resolve = resolve
-_Promise.reject = FakePromise.reject
 
 const all = tasks => tasks.map(task => resolve(task, true))
 
-_Promise.all = tasks => tryCatch(all, tasks)
+const define = (object, key, value) => Object.defineProperty(object, key, {
+  value
+})
 
-module.exports = _Promise
+define(Promise, 'resolve', resolve)
+define(Promise, 'reject', FakePromise.reject)
+define(Promise, 'all', tasks => tryCatch(all, tasks))
+
+module.exports = Promise
