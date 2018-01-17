@@ -1,7 +1,7 @@
 {
   "name": "promise-faker",
-  "version": "1.2.1",
-  "description": "Provides promise-like APIs but does the synchronous things. This module is useful for controlling flows.",
+  "version": "1.2.2",
+  "description": "Provides promise-like APIs but runs synchronously. This module is useful for controlling flows.",
   "main": "lib/index.js",
   "module": "src/index.js",
   "scripts": {
@@ -22,6 +22,10 @@
   "keywords": [
     "promise-faker",
     "fake-promise",
+    "sync",
+    "sync-promise",
+    "promise-sync",
+    "promise.sync",
     "promise",
     "promise.resolve",
     "promise.reject",

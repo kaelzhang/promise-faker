@@ -15,7 +15,7 @@
 
 # promise-faker
 
-Provides promise-like APIs but does the synchronous things. This module is useful for controlling flows.
+Provides `Promise`-like APIs but runs synchronously. This module is useful for controlling flows.
 
 ## Install
 
@@ -42,6 +42,20 @@ function factory (p) {
 // Then, run them as synchronous flows
 factory(FakePromise)  // 2
 factory(Promise)      // Promise {2}
+```
+
+FakePromise actually runs synchronously:
+
+```js
+Promise.resolve(1).then(console.log)
+console.log(2)
+// 2
+// 1
+
+FakePromise.resolve(3).then(console.log)
+console.log(4)
+// 3
+// 4
 ```
 
 ## new FakePromise(executor)
