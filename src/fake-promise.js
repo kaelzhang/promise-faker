@@ -36,7 +36,7 @@ class FakePromise {
     this[REJECTED] = true
   }
 
-  [VALUE] (shoudThrow) {
+  [VALUE] () {
     if (!this[REJECTED]) {
       return this._resolved
     }
@@ -66,13 +66,15 @@ class FakePromise {
   }
 
   static resolve (subject, end) {
-    if (!type.is(subject)) {
-      const p = new FakePromise()
-      p[RESOLVE](subject)
-      return p
-    }
+    const is = type.is(subject)
 
     if (!end) {
+      return is
+        ? subject
+        : resolve(subject)
+    }
+
+    if (!is) {
       return subject
     }
 
@@ -88,6 +90,12 @@ class FakePromise {
     p[REJECT](error)
     return p
   }
+}
+
+function resolve (subject) {
+  const p = new FakePromise()
+  p[RESOLVE](subject)
+  return p
 }
 
 function tryCatch (func, ...args) {

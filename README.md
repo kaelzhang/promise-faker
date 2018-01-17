@@ -80,6 +80,10 @@ try {
 
 Similar as `Promise.reject`, but returns a fake promise
 
+### FakePromise.all(tasks)
+
+Similar as `Promise.all`, but returns a fake promise
+
 ### promise.then(onResolve [, onReject])
 
 ### promise.catch(onReject)

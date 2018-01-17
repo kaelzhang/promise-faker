@@ -35,7 +35,15 @@ class _Promise {
   }
 }
 
-_Promise.resolve = FakePromise.resolve
+const {
+  resolve
+} = FakePromise
+
+_Promise.resolve = resolve
 _Promise.reject = FakePromise.reject
+
+const all = tasks => tasks.map(task => resolve(task, true))
+
+_Promise.all = tasks => tryCatch(all, tasks)
 
 module.exports = _Promise

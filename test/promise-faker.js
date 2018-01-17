@@ -4,6 +4,12 @@ import {type} from '../src/fake-promise'
 
 const only = true
 
+class Value {
+  constructor (value) {
+    this.value = value
+  }
+}
+
 const CASES = [
 
 // Creation
@@ -298,6 +304,35 @@ const CASES = [
     })
   },
   resolve: 2
+},
+{
+  d: 'all with non promise array',
+  factory (P) {
+    return P.all([1, 2, 3])
+  },
+  resolve: new Value([1, 2, 3])
+},
+{
+  d: 'all with mixed array',
+  factory (P) {
+    return P.all([1, P.resolve(2), P.resolve(3)])
+  },
+  resolve: new Value([1, 2, 3])
+},
+{
+  d: 'all with reject',
+  factory (P) {
+    return P.all([1, P.reject(2), P.resolve(3)])
+  },
+  reject: new Value(2)
+},
+{
+  d: 'all with reject resolve',
+  factory (P) {
+    return P.all([1, P.reject(P.resolve(2))])
+  },
+  reject: new Value(2),
+  pResolve: true
 }
 ]
 
@@ -359,6 +394,14 @@ function assert (t, a, expect) {
   t.is(a, expect)
 }
 
+function getValue (values, index) {
+  if (index instanceof Value) {
+    return index.value
+  }
+
+  return values[index]
+}
+
 function run(c, P, get) {
   const {
     factory,
@@ -375,12 +418,16 @@ function run(c, P, get) {
     getTest(c)(desc, async t => {
       let result
 
+      const p = factory(P, ...values)
+
+      t.is(typeof p.then, 'function', 'p.then must be a function')
+
       try {
-        result = await get(factory(P, ...values))
+        result = await get(p)
       } catch (e) {
         if ('reject' in c) {
           await resolveResult(c, e, t, result => {
-            assert(t, result, values[c.reject])
+            assert(t, result, getValue(values, c.reject))
           })
           return
         }
@@ -396,7 +443,7 @@ function run(c, P, get) {
       }
 
       await resolveResult(c, result, t, result => {
-        assert(t, result, values[c.resolve])
+        assert(t, result, getValue(values, c.resolve))
       })
     })
   })
@@ -427,4 +474,8 @@ test('pending', async t => {
   })
 
   t.is(error.message, 'pending unexpectedly')
+})
+
+test('Promise.resolve(nonPromise, true)', async t => {
+  t.is(FakePromise.resolve(1, true), 1)
 })
