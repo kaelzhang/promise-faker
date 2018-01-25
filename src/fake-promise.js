@@ -1,14 +1,14 @@
-const symbol = require('symbol-for')
-const instanceOf = require('graceful-instanceof')
-const type = instanceOf('promise-faker')
+import symbol from 'symbol-for'
+import instanceOf from 'graceful-instanceof'
+export const type = instanceOf('promise-faker')
 
-const RESOLVE = symbol.for('promise-faker:resolve')
-const REJECT = symbol.for('promise-faker:reject')
-const REJECTED = symbol.for('promise-faker:rejected')
-const PENDING = symbol.for('promise-faker:pending')
-const VALUE = symbol.for('promise-faker:value')
+export const RESOLVE = symbol.for('promise-faker:resolve')
+export const REJECT = symbol.for('promise-faker:reject')
+export const REJECTED = symbol.for('promise-faker:rejected')
+export const PENDING = symbol.for('promise-faker:pending')
+export const VALUE = symbol.for('promise-faker:value')
 
-class FakePromise {
+export class FakePromise {
   constructor () {
     type.attach(this)
     this._resolved = undefined
@@ -98,20 +98,10 @@ function resolve (subject) {
   return p
 }
 
-function tryCatch (func, ...args) {
+export function tryCatch (func, ...args) {
   try {
     return FakePromise.resolve(func(...args))
   } catch (error) {
     return FakePromise.reject(error)
   }
-}
-
-module.exports = {
-  FakePromise,
-  RESOLVE,
-  REJECT,
-  REJECTED,
-  PENDING,
-  tryCatch,
-  type
 }

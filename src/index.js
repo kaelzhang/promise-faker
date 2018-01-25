@@ -1,13 +1,13 @@
-const {
+import {
   FakePromise,
   RESOLVE,
   REJECT,
   REJECTED,
   PENDING,
   tryCatch
-} = require('./fake-promise')
+} from './fake-promise'
 
-class Promise {
+export default class Promise {
   constructor (callback) {
     if (typeof callback !== 'function') {
       throw new TypeError(`Promise resolver ${callback} is not a function`)
@@ -48,5 +48,3 @@ const define = (object, key, value) => Object.defineProperty(object, key, {
 define(Promise, 'resolve', resolve)
 define(Promise, 'reject', FakePromise.reject)
 define(Promise, 'all', tasks => tryCatch(all, tasks))
-
-module.exports = Promise
